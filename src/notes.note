@@ -1,0 +1,143 @@
+1.0 You can do this manually
+
+1.1 define this in src file
+
+#define CURL_STATICLIB
+
+1.2 command line for compilation and linking
+
+gcc
+-o evil_program.exe
+main.c
+evil_module.o
+
+-L C:\Program Files (x86)\CodeBlocks\curl-7.26.0-devel-mingw32\include\curl
+-L C:\Program Files (x86)\CodeBlocks\curl-7.26.0-devel-mingw32\include
+-L C:\Program Files (x86)\CodeBlocks\curl-7.26.0-devel-mingw32\lib
+-lcurl
+-lrtmp
+-lidn
+-lssl
+-lcrypto
+-lssh2
+-leay32
+-lidn
+-lrtmp
+-lz
+-lwldap32
+-lgdi32
+-lwsock32
+-lwinmm
+-lws2_32
+-static
+
+2.0 You can use CodeBlocks GUI settings
+2.1 You can do it in global compiler setting if not in a project
+2.2 You can also do it in your project properties
+
+Check that out for codeblocks settings, everything's there.
+
+http://stackoverflow.com/questions/6243638/adding-static-libcurl-to-codeblocks-ide
+
+++ this is OK for version libcurl 7.26
+++ That will statically links all modules in your executable
+
+REDUCING SIZE
+=============
+   There are a number of configure options that can be used to reduce the
+   size of libcurl for embedded applications where binary size is an
+   important factor.  First, be sure to set the CFLAGS variable when
+   configuring with any relevant compiler optimization flags to reduce the
+   size of the binary.  For gcc, this would mean at minimum the -Os option,
+   and potentially the -march=X and -mdynamic-no-pic options as well, e.g.
+
+      ./configure CFLAGS='-Os' ...
+
+   Note that newer compilers often produce smaller code than older versions
+   due to improved optimization.
+
+   Be sure to specify as many --disable- and --without- flags on the configure
+   command-line as you can to disable all the libcurl features that you
+   know your application is not going to need.  Besides specifying the
+   --disable-PROTOCOL flags for all the types of URLs your application
+   will not use, here are some other flags that can reduce the size of the
+   library:
+
+     --disable-ares (disables support for the C-ARES DNS library)
+     --disable-cookies (disables support for HTTP cookies)
+     --disable-crypto-auth (disables HTTP cryptographic authentication)
+     --disable-ipv6 (disables support for IPv6)
+     --disable-manual (disables support for the built-in documentation)
+     --disable-proxy (disables support for HTTP and SOCKS proxies)
+     --disable-verbose (eliminates debugging strings and error code strings)
+     --enable-hidden-symbols (eliminates unneeded symbols in the shared library)
+     --without-libidn (disables support for the libidn DNS library)
+     --without-ssl (disables support for SSL/TLS)
+     --without-zlib (disables support for on-the-fly decompression)
+
+   The GNU compiler and linker have a number of options that can reduce the
+   size of the libcurl dynamic libraries on some platforms even further.
+   Specify them by providing appropriate CFLAGS and LDFLAGS variables on the
+   configure command-line, e.g.
+     CFLAGS="-Os -ffunction-sections -fdata-sections \
+             -fno-unwind-tables -fno-asynchronous-unwind-tables" \
+     LDFLAGS="-Wl,-s -Wl,-Bsymbolic -Wl,--gc-sections"
+
+   Be sure also to strip debugging symbols from your binaries after
+   compiling using 'strip' (or the appropriate variant if cross-compiling).
+   If space is really tight, you may be able to remove some unneeded
+   sections of the shared library using the -R option to objcopy (e.g. the
+   .comment section).
+
+   Using these techniques it is possible to create a basic HTTP-only shared
+   libcurl library for i386 Linux platforms that is only 106 KiB in size, and
+   an FTP-only library that is 108 KiB in size (as of libcurl version 7.27.0,
+   using gcc 4.6.3).
+
+   You may find that statically linking libcurl to your application will
+   result in a lower total size than dynamically linking.
+
+   Note that the curl test harness can detect the use of some, but not all, of
+   the --disable statements suggested above. Use will cause tests relying on
+   those features to fail.  The test harness can be manually forced to skip
+   the relevant tests by specifying certain key words on the runtests.pl
+   command line.  Following is a list of appropriate key words:
+
+     --disable-cookies          !cookies
+     --disable-crypto-auth      !HTTP\ Digest\ auth !HTTP\ proxy\ Digest\ auth
+     --disable-manual           !--manual
+     --disable-proxy            !HTTP\ proxy !proxytunnel !SOCKS4 !SOCKS5
+     
+     Disabling Specific Protocols in Win32 builds
+   --------------------------------------------
+
+   The configure utility, unfortunately, is not available for the Windows
+   environment, therefore, you cannot use the various disable-protocol
+   options of the configure utility on this platform.
+
+   However, you can use the following defines to disable specific
+   protocols:
+
+   HTTP_ONLY             disables all protocols except HTTP
+   CURL_DISABLE_FTP      disables FTP
+   CURL_DISABLE_LDAP     disables LDAP
+   CURL_DISABLE_TELNET   disables TELNET
+   CURL_DISABLE_DICT     disables DICT
+   CURL_DISABLE_FILE     disables FILE
+   CURL_DISABLE_TFTP     disables TFTP
+   CURL_DISABLE_HTTP     disables HTTP
+
+   If you want to set any of these defines you have the following
+   possibilities:
+
+   - Modify lib/config-win32.h
+   - Modify lib/curl_setup.h
+   - Modify lib/Makefile.vc6
+   - Add defines to Project/Settings/C/C++/General/Preprocessor Definitions
+     in the vc6libcurl.dsw/vc6libcurl.dsp Visual C++ 6 IDE project.
+     
+     
+     
+     Try : -lcurldll -lssh2 -lidn -lrtmp -lssl -lcrypto -lz -lws2_32 -lwldap32
+     
+     
