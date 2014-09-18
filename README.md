@@ -1,7 +1,7 @@
 cli.speedtest
 ====================================
 
-Standalone Windows Commandline Speedtest writtin in C++
+Standalone Windows Commandline Speedtest written in C++
 
 <p>The drive for this project was my impatience to load up speedtest.net and waiting for the page to load
 its fancy speedometer, ping test, and server select just to find out my downspeed.</p>
