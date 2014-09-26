@@ -9,13 +9,14 @@
 
 using namespace std;
 
-const float 	ver				= 1.0;
+const float 	ver				= 1.01;
 const int 		width			= 40;
 const 			time_t sTime	= time(NULL);
 double 			topSpeed 		= 0;
 const string	small			= "http://speedtest-2.internode.on.net/oz-broadband/jetty_600kb.jpg";
 const string	medium			= "http://speedtest-2.internode.on.net/oz-broadband/storm_3mb.jpg";
 const string	large			= "http://speedtest-2.internode.on.net/oz-broadband/pinball_9mb.jpg";
+
 
 static size_t WriteCallback(void *ptr, size_t size, size_t nmemb, void *data)
 {
@@ -40,15 +41,6 @@ int progressCallback(void *ptr,   double dltotal,   double dlnow,   double ultot
     
     printf("%0.0f%% @ %0.2f KB/s \r", round(progressPercentage * 100), speed);
     
-    /*
-    int i = 0;
-	printf("[");
-    for ( ; i < progressBar; i++) { printf("="); }
-    for ( ; i < width; i++) { printf(" "); }
-	printf("]\r");
-    */
-    
-    //fflush(stdout);
     
     return 0; 
 }
@@ -98,7 +90,8 @@ void speedtest(string url)
     res = curl_easy_getinfo(curl_handle, CURLINFO_SPEED_DOWNLOAD, &val);
       printf("Average Speed: %0.2f KB/s (%0.2fMb/s)\n", (val / 1024), (val / 100000));
 
-      printf("Top Speed: %0.2lf KB/s\n", topSpeed);
+      printf("Top Speed: %0.2lf KB/s (%0.2fMb/s)\n", topSpeed, (topSpeed / 100));
+      
    }
    else 
    {
@@ -122,8 +115,8 @@ int main(int argc, char** argv) {
 		  {
 	        if (strncasecmp(*argv, "-help", 5) == 0) 
 			{
-	          fprintf(stderr, "\rUsage: %s [-size=small|medium|large] [-help]\n", appname);
-	          exit(1);
+	          	fprintf(stderr, "\rUsage: %s [-size=small|medium|large] [-url=url_to_file] [-pause] [-help]\n", appname);
+	          	exit(1);
 	        }
 	        else if (strncasecmp(*argv, "-size=", 6) == 0)
 			 {
@@ -137,6 +130,11 @@ int main(int argc, char** argv) {
 		        		fprintf(stderr, "\r%s: Invalid size parameter: \"%s\", use -help for usage.\n", appname, *argv + 6);
 		                exit(1);
 		          }
+	        }
+	        else if(strncasecmp(*argv, "-url=", 5) == 0)
+	        {
+	        	string url = (*argv)+5;
+	        	speedtest(url);
 	        }
 			else 
 			{
